@@ -1,17 +1,24 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerBehaviour : MonoBehaviour
 {
 
+    public int score;
+    public UnityEvent onScoreChanged = new UnityEvent();
+
     private bool horizontalPressed;
     private bool verticalPressed;
 
+    private Rigidbody rb;
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
     void Update()
     {
-        // TODO player movement (with arrow keys)
-
         float hor = Input.GetAxisRaw("Horizontal");
         float ver = Input.GetAxisRaw("Vertical");
 
@@ -48,7 +55,21 @@ public class PlayerBehaviour : MonoBehaviour
             return;
         }
 
-        // TODO: check
-        transform.position += direction;
+        rb.MovePosition(transform.position + direction);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if(other.CompareTag("Coin"))
+        {
+            ChangeScore(1);
+            Destroy(other.gameObject);
+        }
+    }
+
+    public void ChangeScore(int amount)
+    {
+        score += amount;
+        onScoreChanged.Invoke();
     }
 }

@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-
     public GameObject floorPrefab;
-    public GameObject playerPrefab;
+    public PlayerBehaviour playerPrefab;
     public Transform inGameParent;
+    public GameObject coinPrefab;
+
+    public PlayerBehaviour playerInstance;
 
     public int gridSize = 3;
 
@@ -23,10 +25,12 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        App.screenManager.Show<InGameScreen>();
-
         SpawnFloor();
         SpawnPlayer();
+
+        App.obstacleManager.SpawnObstacles();
+
+        App.screenManager.Show<InGameScreen>();
     }
 
     public void SpawnFloor()
@@ -43,7 +47,9 @@ public class GameManager : MonoBehaviour
 
     public void SpawnPlayer()
     {
-        Instantiate(playerPrefab, new Vector3(0, 0.8f, 0), Quaternion.identity, inGameParent);
+        playerInstance = Instantiate(playerPrefab, new Vector3(0, 0.8f, 0), Quaternion.identity, inGameParent);
+        playerInstance.onScoreChanged.AddListener(SpawnCoin);
+        SpawnCoin();
     }
 
     public void DestroyFloor()
@@ -52,6 +58,18 @@ public class GameManager : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+    }
+
+    public void SpawnCoin()
+    {
+        Vector3 pos = new Vector3(0, 0.8f, 0);
+        do
+        {
+            pos.x = -1.1f + 1.1f * Random.Range(0, gridSize);
+            pos.z = -1.1f + 1.1f * Random.Range(0, gridSize);
+        } while(Vector3.Distance(pos, playerInstance.transform.position) < 0.1f);
+
+        Instantiate(coinPrefab, pos, Quaternion.identity, inGameParent);
     }
 
     public void GoToMenu()
