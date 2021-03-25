@@ -7,6 +7,8 @@ public class ObstacleBehaviour : MonoBehaviour
     public Vector3 direction;
     public bool moving;
     public bool xAxis;
+    public Transform particlesHolder;
+    public ParticleSystem particles;
 
     private Rigidbody rb;
     private int side;
@@ -14,6 +16,7 @@ public class ObstacleBehaviour : MonoBehaviour
     public void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        particles.Stop();
     }
 
     public void Init(Vector3 dir, bool xAxis)
@@ -36,6 +39,7 @@ public class ObstacleBehaviour : MonoBehaviour
                 {
                     moving = false;
                     transform.position = new Vector3(10 * side, transform.position.y, transform.position.z);
+                    particles.Stop();
                 }
             }
             else
@@ -44,6 +48,7 @@ public class ObstacleBehaviour : MonoBehaviour
                 {
                     moving = false;
                     transform.position = new Vector3(transform.position.x, transform.position.y, 10 * side);
+                    particles.Stop();
                 }
             }
         }
@@ -51,7 +56,25 @@ public class ObstacleBehaviour : MonoBehaviour
 
     public void StartMoving()
     {
+        particles.Play();
         moving = true;
         side *= -1;
+
+        if(xAxis)
+        {
+            particlesHolder.rotation = Quaternion.Euler(0, side == -1 ? 0  : 180, 0);
+            //if(side == -1)
+            //{
+                //particlesHolder.rotation = Quaternion.Euler(0, 0, 0);
+            //}
+            //else
+            //{
+                //particlesHolder.rotation = Quaternion.Euler(0, 180, 0);
+            //}
+        }
+        else
+        {
+            particlesHolder.rotation = Quaternion.Euler(0, side == -1 ? 270 : 90, 0);
+        }
     }
 }

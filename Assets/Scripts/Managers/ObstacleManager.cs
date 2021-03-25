@@ -45,6 +45,6 @@ public class ObstacleManager : MonoBehaviour
     public void StartObstacle()
     {
         // TODO: random selection
-        obstacles[0].StartMoving();
+        obstacles[1].StartMoving();
     }
 }
