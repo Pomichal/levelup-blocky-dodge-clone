@@ -12,6 +12,8 @@ public class PlayerBehaviour : MonoBehaviour
 
     private Rigidbody rb;
 
+    private Vector2 startPosition;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -42,6 +44,38 @@ public class PlayerBehaviour : MonoBehaviour
         {
             verticalPressed = false;
         }
+
+        if(Input.GetMouseButtonDown(0))
+        {
+            startPosition = Input.mousePosition;
+        }
+
+        if(Input.GetMouseButtonUp(0))
+        {
+            Vector2 swipe = (Vector2)Input.mousePosition - startPosition;
+
+            if(swipe.magnitude > 200)
+            {
+                float angle = Vector2.SignedAngle(Vector2.right, swipe);
+                if(angle > 0 && angle < 90)
+                {
+                    Move(Vector3.right * 1.1f);
+                }
+                else if(angle > -180 && angle < -90)
+                {
+                    Move(-Vector3.right * 1.1f);
+                }
+                else if(angle > 90 && angle < 180)
+                {
+                    Move(Vector3.forward * 1.1f);
+                }
+                else if(angle < 0 && angle > -90)
+                {
+                    Move(-Vector3.forward * 1.1f);
+                }
+            }
+        }
+
     }
 
     private void Move(Vector3 direction)
@@ -64,6 +98,10 @@ public class PlayerBehaviour : MonoBehaviour
         {
             ChangeScore(1);
             Destroy(other.gameObject);
+        }
+        if(other.CompareTag("Obstacle"))
+        {
+            App.gameManager.GameOver();
         }
     }
 

@@ -7,6 +7,10 @@ public class ObstacleManager : MonoBehaviour
 
     [Header("Game Settings")]
     public float speed;
+    public float speedIncrease;
+    public float maxSpeed;
+    public float minTime;
+    public float maxTime;
 
     [Header("Prefabs")]
     public ObstacleBehaviour obstaclePrefab;
@@ -14,16 +18,22 @@ public class ObstacleManager : MonoBehaviour
 
     public List<ObstacleBehaviour> obstacles;
 
+    private float timer;
+
     void Awake()
     {
+        timer = Random.Range(minTime, maxTime);
         App.obstacleManager = this;
     }
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        timer -= Time.deltaTime;
+
+        if(timer < 0)
         {
             StartObstacle();
+            timer = Random.Range(minTime, maxTime);
         }
     }
 
@@ -44,7 +54,23 @@ public class ObstacleManager : MonoBehaviour
 
     public void StartObstacle()
     {
-        // TODO: random selection
-        obstacles[1].StartMoving();
+        List<ObstacleBehaviour> possibleObstacles = new List<ObstacleBehaviour>();
+        foreach(ObstacleBehaviour o in obstacles)
+        {
+            if(!o.moving)
+            {
+                possibleObstacles.Add(o);
+            }
+        }
+        if(possibleObstacles.Count == 0)
+        {
+            return;
+        }
+        possibleObstacles[Random.Range(0, possibleObstacles.Count)].StartMoving(speed);
+        speed += speedIncrease;
+        if(speed > maxSpeed)
+        {
+            speed = maxSpeed;
+        }
     }
 }

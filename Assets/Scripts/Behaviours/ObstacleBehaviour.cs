@@ -10,6 +10,7 @@ public class ObstacleBehaviour : MonoBehaviour
     public Transform particlesHolder;
     public ParticleSystem particles;
 
+    private float speed;
     private Rigidbody rb;
     private int side;
 
@@ -31,7 +32,7 @@ public class ObstacleBehaviour : MonoBehaviour
     {
         if(moving)
         {
-            rb.MovePosition(transform.position + direction * App.obstacleManager.speed* side * Time.deltaTime);
+            rb.MovePosition(transform.position + direction * speed * side * Time.deltaTime);
 
             if(xAxis)
             {
@@ -54,10 +55,11 @@ public class ObstacleBehaviour : MonoBehaviour
         }
     }
 
-    public void StartMoving()
+    public void StartMoving(float speed)
     {
         particles.Play();
         moving = true;
+        this.speed = speed;
         side *= -1;
 
         if(xAxis)

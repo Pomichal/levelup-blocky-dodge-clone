@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public GameObject coinPrefab;
 
     public PlayerBehaviour playerInstance;
+    public int lastScore;
 
     public int gridSize = 3;
 
@@ -52,12 +53,13 @@ public class GameManager : MonoBehaviour
         SpawnCoin();
     }
 
-    public void DestroyFloor()
+    public void DestroyInGame()
     {
         foreach(Transform child in inGameParent)
         {
             Destroy(child.gameObject);
         }
+        App.obstacleManager.obstacles = new List<ObstacleBehaviour>();
     }
 
     public void SpawnCoin()
@@ -72,9 +74,22 @@ public class GameManager : MonoBehaviour
         Instantiate(coinPrefab, pos, Quaternion.identity, inGameParent);
     }
 
+    public void GameOver()
+    {
+        lastScore = playerInstance.score;
+        int oldHighScore = PlayerPrefs.GetInt("highScore", 0);
+        if(oldHighScore < lastScore)
+        {
+            PlayerPrefs.SetInt("highScore", lastScore);
+        }
+        App.screenManager.Hide<InGameScreen>();
+        App.screenManager.Show<GameOverScreen>();
+        DestroyInGame();
+    }
+
     public void GoToMenu()
     {
         App.screenManager.Show<MenuScreen>();
-        DestroyFloor();
+        DestroyInGame();
     }
 }
